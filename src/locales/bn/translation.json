@@ -1,0 +1,19 @@
+{
+  "title": "স্বাগত",
+  "welcome": "QR কোড স্ক্যান করতে JCB লুব্রিকেন্ট প্যাকের ভিতরে কুপন খুঁজুন",
+  "scanQr": "QR স্ক্যান করুন",
+  "coupunHisotry": "কুপন রিডিম হিসোট্রি",
+  "thankYouText": "একটি আসল JCB লুব্রিকেন্ট প্যাক কেনার জন্য আপনাকে ধন্যবাদ৷",
+  "cashbackAmout": " রুপি{{amount}} নগদ ফেরত!!!",
+  "enterDetails": "আপনার বিবরণ লিখুন দয়া করে <strong> আপনার ক্যাশব্যাক দাবি করুন!! </strong>",
+  "upiGuidelines": "সাম্প্রতিক RBI নির্দেশিকাগুলির কারণে, IMPS এবং UPI-এর মতো ব্যাঙ্ক ট্রান্সফার যন্ত্রগুলি পরবর্তী বিজ্ঞপ্তি না দেওয়া পর্যন্ত আটকে রাখা হয়েছে৷ ",
+  "paytmWalletLabel": "পেটিএম ওয়ালেট নম্বর",
+  "nameLabel": "নাম",
+  "accountNumberLabel": "হিসাব নাম্বার",
+  "retypeAccountNumberLabel": "অ্যাকাউন্ট নম্বর পুনরায় টাইপ করুন",
+  "ifscCodeLabel": "IFSC কোড",
+  "selectStateLabel": "রাজ্য নির্বাচন কর",
+  "selectCityLabel": "শহর নির্বাচন করুন",
+  "selectCustomerTypeLabel": "গ্রাহক প্রকার নির্বাচন করুন",
+  "aceptTerms": "আমি সকল শর্তাবলী মেনে নিলাম"
+}

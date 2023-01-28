@@ -13,6 +13,9 @@ import ReactDOM from 'react-dom/client';
 
 // Use consistent styling
 import 'sanitize.css/sanitize.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
+import './styles/style.css';
 
 // Import root app
 import { App } from 'app';
