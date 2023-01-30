@@ -20,7 +20,7 @@ export function HomePage() {
   const [res, setRes] = React.useState<any>();
 
   const validateQRCode = async code => {
-    const QRCode = code.substring(3);
+    const QRCode = code;
     const docRef = doc(db, 'qr_code', QRCode);
     const docSnap = await getDoc(docRef);
     return docSnap.data();
@@ -44,45 +44,7 @@ export function HomePage() {
         navigate('/notfound');
       }
     });
-  });
-  const addTodo = async e => {
-    e.preventDefault();
-
-    try {
-      const docRef = await addDoc(collectionRef, {
-        id: 'JCB',
-        name: '',
-        walletNumber: '',
-        address: {
-          state: '',
-          city: '',
-        },
-        customerType: '',
-        isProcessed: false,
-        isActive: true,
-      });
-      console.log('Document written with ID: ', docRef.id);
-      await updateDoc(docRef, { id: `JCB${docRef.id}` });
-    } catch (e) {
-      console.error('Error adding document: ', e);
-    }
-  };
-
-  const getCollections = async e => {
-    e.preventDefault();
-    try {
-      const docsSnap = await getDocs(collectionRef);
-
-      // console.log(docsSnap);
-
-      docsSnap.forEach(doc => {
-        console.log(doc.data());
-      });
-    } catch (e) {
-      console.error('Error adding document: ', e);
-    }
-  };
-
+  }, []);
   return (
     <>
       <Helmet>
@@ -91,9 +53,6 @@ export function HomePage() {
       </Helmet>
       <NavBar />
       {res && <MainComponent res={res} />}
-
-      {/* <button onClick={addTodo}> Click</button>
-      <button onClick={getCollections}> get collections</button> */}
     </>
   );
 }

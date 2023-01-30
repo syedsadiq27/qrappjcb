@@ -22,7 +22,7 @@ export const Login = () => {
         navigate('/admin/generate');
       })
       .catch(error => {
-        console.log(error);
+        console.error(error);
         const errorCode = error.code;
         const errorMessage = error.message;
       });

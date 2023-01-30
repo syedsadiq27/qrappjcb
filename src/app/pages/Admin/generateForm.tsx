@@ -5,6 +5,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  setDoc,
 } from 'firebase/firestore';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -27,61 +28,92 @@ export const GenerateForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<IFormInput>();
-  const onSubmit = e => {
+  const onSubmit = async e => {
     const { cashbackAmount, codePrefix, numberOfCode } = e;
+    const completedArray: any = [];
 
-    for (let i = 0; i < numberOfCode; i++) {
-      addDocument({
+    while (completedArray.length < numberOfCode) {
+      const docId = await addDocument({
         prefix: codePrefix.toUpperCase(),
         amount: cashbackAmount,
       });
+
+      if (docId) {
+        completedArray.push(docId);
+      }
     }
+
+    alert('completed');
   };
 
   const addDocument = async ({ prefix, amount }) => {
     try {
+      const create_UUID = () => {
+        var dt = new Date().getTime();
+        var uuid = `${prefix}xxxxyyxxxyy`.replace(/[xy]/g, function (c) {
+          var r = (dt + Math.random() * 16) % 16 | 0;
+          dt = Math.floor(dt / 16);
+          return (c == 'x' ? r : (r & 0x3) | 0x8).toString(16);
+        });
+        return uuid.toUpperCase();
+      };
+
+      const documentId = create_UUID();
+      const data = await findDocument({ documentId });
+
+      if (data) return false;
+
       const Doc = {
-        id: prefix,
+        id: documentId,
         cashbackAmount: parseInt(amount),
         name: '',
         walletNumber: '',
-        address: {
-          state: '',
-          city: '',
-        },
+        state: '',
+        city: '',
         customerType: '',
         isProcessed: false,
         isActive: true,
+        // created: Timestamp,
       };
-      const docRef = await addDoc(collectionRef, Doc);
-      console.log('Document written with ID: ', docRef.id);
-      await updateDoc(docRef, { id: `${prefix}${docRef.id}` });
+
+      await setDoc(doc(db, 'qr_code', documentId), Doc);
+
+      return documentId;
     } catch (e) {
       console.error('Error adding document: ', e);
     }
+  };
+
+  const findDocument = async ({ documentId }) => {
+    const docRef = doc(db, 'qr_code', documentId);
+    const docSnap = await getDoc(docRef);
+    return docSnap.data();
   };
 
   const exportGenertedCodes = async e => {
     console.log('startd...');
     const array = await getAllCollections(e);
 
-    const sortedarray = array.map(item =>
-      Object.keys(item)
-        .sort()
-        .reduce((obj, key) => {
-          obj[key] = item[key];
-          return obj;
-        }, {}),
-    );
-    console.log(sortedarray);
-    setExportData(sortedarray);
+    // const sortedarray = array.map(item =>
+    //   Object.keys(item)
+    //     .sort()
+    //     .reduce((obj, key) => {
+    //       obj[key] = item[key];
+    //       return obj;
+    //     }, {}),
+    // );
+    // console.log(sortedarray);
+    // setExportData(sortedarray);
+
+    downloadJSON(array);
   };
 
-  const downloadJSON = () => {
+  const downloadJSON = exportData => {
     const dataToConvert = {
       data: exportData,
-      filename: 'ip_addresses_report',
+      filename: 'csv_export',
       delimiter: ',',
+      // headers: ['id', 'cashbackAmount', 'isActive'],
     };
     csvDownload(dataToConvert);
   };
@@ -93,9 +125,21 @@ export const GenerateForm = () => {
 
       const array: any = [];
 
-      docsSnap.forEach(doc => {
+      docsSnap.forEach((doc: any) => {
         // console.log(doc.data());
-        array.push(doc.data());
+        const data = doc.data();
+        // const created = doc._
+
+        data.createdDate = new Date(
+          doc._document.createTime.timestamp.seconds * 1000,
+        ).toLocaleDateString();
+
+        data.createdTime = new Date(
+          doc._document.createTime.timestamp.seconds * 1000,
+        ).toLocaleTimeString();
+
+        // console.log(data);
+        array.push(data);
       });
 
       return array;
@@ -200,9 +244,9 @@ export const GenerateForm = () => {
               >
                 Export Generated QR Codes
               </button>
-              {exportData.length > 0 && (
-                <button type="button" onClick={downloadJSON} />
-              )}
+              {/* {exportData.length > 0 && (
+                <button ref={exportButton} type="button" onClick={downloadJSON} />
+              )} */}
             </div>
           </form>
         </div>
