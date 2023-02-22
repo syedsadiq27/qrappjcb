@@ -4108,6 +4108,11 @@ case-sensitive-paths-webpack-plugin@^2.4.0:
   resolved "https://registry.yarnpkg.com/case-sensitive-paths-webpack-plugin/-/case-sensitive-paths-webpack-plugin-2.4.0.tgz#db64066c6422eed2e08cc14b986ca43796dbc6d4"
   integrity sha512-roIFONhcxog0JSSWbvVAh3OocukmSgpqOH6YpMkCvav/ySIV3JKg4Dc8vYtQjYi/UxpNE36r/9v+VqTQqgkYmw==
 
+cashfree-sdk@0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/cashfree-sdk/-/cashfree-sdk-0.1.1.tgz#dd2ea59eb9f1c8ff211aa3973ab3c4c420a8c0db"
+  integrity sha512-Mr7oJObcDJR7tHeDvCyMeD2nsJhtik8P0I1hxZ+VbqtL+DtImirHKm/SsX8SikJuR4c+letYXgQfTeEbpEnoLw==
+
 chalk-template@0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/chalk-template/-/chalk-template-0.4.0.tgz#692c034d0ed62436b9062c1707fadcd0f753204b"

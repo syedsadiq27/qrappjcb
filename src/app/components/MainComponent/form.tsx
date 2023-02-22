@@ -40,7 +40,10 @@ export const Form = () => {
   } = useForm<IFormInput>();
 
   const watchFields = watch(['state']);
-  const onSubmit: SubmitHandler<IFormInput> = data => console.log(data);
+  const onSubmit: SubmitHandler<IFormInput> = data => {
+    console.log(data);
+    handleSubmitButton();
+  };
 
   const [walletNumber, setWalletNumber] = useState('');
   const [selectedOption, setSelectedOption] =
@@ -82,8 +85,19 @@ export const Form = () => {
     if (selectedCity) setSelectedCity(city[0]);
   }, [selectedOption]);
 
-  const handleSubmitButton = e => {
-    e.preventDefault();
+  const handleSubmitButton = () => {
+    const create_UUID = () => {
+      var dt = new Date().getTime();
+      var uuid = `ORDERID_xxxxxyxxxyxx`.replace(/[xy]/g, function (c) {
+        var r = (dt + Math.random() * 16) % 16 | 0;
+        dt = Math.floor(dt / 16);
+        return (c == 'x' ? r : (r & 0x3) | 0x8).toString(16);
+      });
+      return uuid.toUpperCase();
+    };
+
+    const orderId = create_UUID();
+    // e.preventDefault();
 
     const finalData = {
       walletNumber,
@@ -93,6 +107,47 @@ export const Form = () => {
       },
       customerType: selectedMerchantType?.value,
     };
+
+    console.log(finalData);
+
+    fetch(
+      'https://staging-dashboard.paytm.com/bpay/api/v1/disburse/order/wallet/gratification',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-mid': '{mid}',
+          'x-checksum': '{checksum}',
+        },
+        body: JSON.stringify({
+          subwalletGuid: '28054249-XXXX-XXXX-af8f-fa163e429e83',
+          orderId: orderId,
+          beneficiaryPhoneNo: walletNumber,
+          amount: '1.00',
+        }),
+      },
+    );
+
+    // const cfSdk = require('cashfree-sdk');
+
+    // //access the PayoutsSdk from CashfreeSDK
+    // const { Payouts } = cfSdk;
+
+    // // Instantiate Cashfree Payouts
+    // const payoutsInstance = new Payouts({
+    //   env: 'TEST',
+    //   clientId: 'CF295059CF724H5ROKEU1D902S5G ',
+    //   clientSecret: 'a061409e11a08146e16527c1080d4c84cb2c951e',
+    // });
+
+    // fetch('http://payout-gamma.cashfree.com/payout/v1/authorize', {
+    //   method: 'POST',
+    //   headers: {
+    //     'X-Client-Id': 'CF295059CF724H5ROKEU1D902S5G',
+    //     'X-Client-Secret': 'a061409e11a08146e16527c1080d4c84cb2c951e',
+    //     // 'cache-control': 'no-cache',
+    //   },
+    // });
 
     // fetch('https://sandbox.cashfree.com/pg/orders', {
     //   method: 'POST',
@@ -104,14 +159,6 @@ export const Form = () => {
     //   },
     //   body: '{\n  "order_id": "order_1626945143520",\n  "order_amount": 10.12,\n  "order_currency": "INR",\n  "order_note": "Additional order info"\n  "customer_details": {\n   "customer_id": "12345",\n    "customer_name": "name",\n    "customer_email": "care@cashfree.com",\n    "customer_phone": "9816512345"\n  }\n}',
     // });
-
-    fetch(`http://payout-api.cashfree.com/payout/v1/authorize`, {
-      method: 'POST',
-      headers: {
-        'X-Client-Id': process.env.REACT_APP_CASHFREE_CLIENT_ID!,
-        'X-Client-Secret': process.env.REACT_APP_CASHFREE_CLIENT_SECRET!,
-      },
-    });
 
     // fetch('http://{{Host%20Url}}/payout/v1.2/directTransfer', {
     //   method: 'POST',

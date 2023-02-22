@@ -12,8 +12,8 @@ const NavBar = ({ isTranslateRequired = true }) => {
   };
 
   return (
-    <nav className="navbar main_nav navbar-expand-lg navbar-dark px-sm-3 px-0">
-      <div className="d-flex justify-content-between align-items-center flex-wrap px-sm-3 w-100">
+    <nav className="navbar main_nav navbar-expand-lg navbar-dark">
+      <div className="d-flex justify-content-between align-items-center flex-wrap w-100">
         <div className="navbar_brand">
           <a className="navbar-brand logo" href="#">
             <img src={Logo} className="img-fluid" alt="Godrej Logo" />
@@ -45,6 +45,23 @@ const NavBar = ({ isTranslateRequired = true }) => {
                 <option value="ur">{t(translations.urdu)}</option>
               </select>
             </div>
+            Powered by &nbsp;
+            <span style={{ whiteSpace: 'nowrap' }}>
+              <a
+                className="VIpgJd-ZVi9od-l4eHX-hSRGPd"
+                href="https://translate.google.com"
+                target="_blank"
+              >
+                <img
+                  src="https://www.gstatic.com/images/branding/googlelogo/1x/googlelogo_color_42x16dp.png"
+                  width="37px"
+                  height="14px"
+                  style={{ paddingRight: '3px' }}
+                  alt="Google Translate"
+                />
+                Translate
+              </a>
+            </span>
           </div>
         </div>
       </div>

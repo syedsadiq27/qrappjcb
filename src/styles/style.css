@@ -1,8 +1,8 @@
-/* @import url(../fonts/fonts.css); */
+@import url(../fonts/fonts.css);
 
 body {
   margin: 0;
-  font-family: 'Futura Md BT';
+  font-family: 'Futura Md BT' !important;
   font-size: 14px;
 }
 #home {
@@ -408,22 +408,6 @@ span.no {
   background: #ffc80b;
   text-transform: uppercase;
   margin: 10px;
-}
-.overlay {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 100%;
-  width: 100%;
-  opacity: 0;
-  transition: 0.5s ease;
-  background-color: #0000008c;
-}
-
-.container:hover .overlay {
-  opacity: 1;
 }
 
 .text {
@@ -1746,7 +1730,7 @@ nav {
 }
 .main_nav {
   background: #fcb026;
-  padding: 15px 0;
+  padding: 15px 0 !important;
 }
 .inner_nav {
   background: #ffffff;

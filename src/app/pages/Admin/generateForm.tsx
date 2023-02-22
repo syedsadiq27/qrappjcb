@@ -12,6 +12,7 @@ import { useForm } from 'react-hook-form';
 import { db } from 'services/firebase';
 // import CsvDownloadButton from 'react-json-to-csv';
 import csvDownload from 'json-to-csv-export';
+import './overlay.css';
 
 interface IFormInput {
   codePrefix: string;
@@ -22,7 +23,8 @@ interface IFormInput {
 const collectionRef = collection(db, 'qr_code');
 
 export const GenerateForm = () => {
-  const [exportData, setExportData] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const [generated, setGenerated] = React.useState(0);
   const {
     register,
     handleSubmit,
@@ -31,17 +33,20 @@ export const GenerateForm = () => {
   const onSubmit = async e => {
     const { cashbackAmount, codePrefix, numberOfCode } = e;
     const completedArray: any = [];
+    setLoading(true);
 
     while (completedArray.length < numberOfCode) {
       const docId = await addDocument({
         prefix: codePrefix.toUpperCase(),
         amount: cashbackAmount,
       });
-
       if (docId) {
         completedArray.push(docId);
       }
+      setGenerated(p => p + 1);
     }
+    setGenerated(0);
+    setLoading(false);
 
     alert('completed');
   };
@@ -150,6 +155,14 @@ export const GenerateForm = () => {
 
   return (
     <>
+      <div style={!loading ? { display: 'none' } : {}} className=" row overlay">
+        <div className="overlay__inner">
+          <div className="overlay__content">
+            <span className="spinner"></span>
+            <span style={{ background: '#222', opacity: 1 }}> Creating...</span>
+          </div>
+        </div>
+      </div>
       <div className="row justify-content-center">
         <div className="col-md-6 pt-2" pt-md-5>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -214,7 +227,7 @@ export const GenerateForm = () => {
                     {...register('numberOfCode', {
                       required: true,
                       min: 0,
-                      max: 101,
+                      max: 10001,
                     })}
                   />
                 </div>

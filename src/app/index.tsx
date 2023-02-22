@@ -33,13 +33,13 @@ export function App() {
       </Helmet>
 
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="welcome" element={<Welcome />} />
-        <Route path="notfound" element={<NotFoundPage />} />
-        <Route path="claimed" element={<NotFoundPage />} />
-        <Route path="tnc" element={<TermsAndConditions />} />
-        <Route path="/admin/login" element={<Login />} />
-        <Route path="/admin/generate" element={<Generate />} />
+        <Route path="/jcb" element={<HomePage />} />
+        <Route path="/jcb/welcome" element={<Welcome />} />
+        <Route path="/jcb/notfound" element={<NotFoundPage />} />
+        <Route path="/jcb/claimed" element={<NotFoundPage />} />
+        <Route path="/jcb/tnc" element={<TermsAndConditions />} />
+        <Route path="/jcb/admin/login" element={<Login />} />
+        <Route path="/jcb/admin/generate" element={<Generate />} />
       </Routes>
       <GlobalStyle />
     </BrowserRouter>

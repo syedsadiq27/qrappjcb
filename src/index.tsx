@@ -14,10 +14,12 @@ import Obfuscate from 'react-obfuscate';
 
 // Use consistent styling
 import 'sanitize.css/sanitize.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/js/bootstrap.bundle.min';
 import './styles/style.css';
-
+import './assets/responsive.css';
+import './assets/bootstrap.min.css';
+import './assets/mel.css';
 // Import root app
 import { App } from 'app';
 
@@ -33,24 +35,24 @@ const root = ReactDOM.createRoot(
 );
 
 // Disable right-click
-document.addEventListener('contextmenu', e => e.preventDefault());
+// document.addEventListener('contextmenu', e => e.preventDefault());
 
-function ctrlShiftKey(e, keyCode) {
-  return e.ctrlKey && e.shiftKey && e.keyCode === keyCode.charCodeAt(0);
-}
+// function ctrlShiftKey(e, keyCode) {
+//   return e.ctrlKey && e.shiftKey && e.keyCode === keyCode.charCodeAt(0);
+// }
 
-document.onkeydown = e => {
-  // Disable F12, Ctrl + Shift + I, Ctrl + Shift + J, Ctrl + U
-  if (
-    // @ts-ignore
-    e.keyCode === 123 ||
-    ctrlShiftKey(e, 'I') ||
-    ctrlShiftKey(e, 'J') ||
-    ctrlShiftKey(e, 'C') ||
-    (e.ctrlKey && e.keyCode === 'U'.charCodeAt(0))
-  )
-    return false;
-};
+// document.onkeydown = e => {
+//   // Disable F12, Ctrl + Shift + I, Ctrl + Shift + J, Ctrl + U
+//   if (
+//     // @ts-ignore
+//     e.keyCode === 123 ||
+//     ctrlShiftKey(e, 'I') ||
+//     ctrlShiftKey(e, 'J') ||
+//     ctrlShiftKey(e, 'C') ||
+//     (e.ctrlKey && e.keyCode === 'U'.charCodeAt(0))
+//   )
+//     return false;
+// };
 
 root.render(
   // <Obfuscate>

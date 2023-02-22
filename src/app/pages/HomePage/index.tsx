@@ -32,7 +32,7 @@ export function HomePage() {
     const qcId = urlParams.get('qc');
 
     if (!qcId) {
-      navigate('/welcome');
+      navigate('/jcb/welcome');
       return;
     }
     const docSnap = validateQRCode(qcId);

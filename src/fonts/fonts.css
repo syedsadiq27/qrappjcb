@@ -1,4 +1,4 @@
-@font-face {
+/* @font-face {
   font-family: 'Futura Hv BT';
   src: url('FuturaBT-Heavy.eot');
   src: url('FuturaBT-Heavy.eot?#iefix') format('embedded-opentype'),
@@ -8,27 +8,32 @@
   font-weight: 900;
   font-style: normal;
   font-display: swap;
-}
+} */
 
 @font-face {
   font-family: 'Futura Md BT';
-  src: url('FuturaBT-Medium.eot');
-  src: url('FuturaBT-Medium.eot?#iefix') format('embedded-opentype'),
-    url('FuturaBT-Medium.woff2') format('woff2'),
-    url('FuturaBT-Medium.woff') format('woff'),
-    url('FuturaBT-Medium.ttf') format('truetype');
+  /* src: url('./FuturaMediumBT.ttf') format('woff'),
+    url('./FuturaMediumBT.ttf') format('opentype'),
+    url('./FuturaMediumBT.ttf') format('truetype'); */
+  /* src: url('%PUBLIC_URL%/assets/fonts/FuturaBT-Medium.woff2') format('woff')
+     */
+  src: url('./FuturaMediumBT.ttf') format('woff');
+  /* url('https://candyfonts.com/wp-data/2019/04/06/51581/FutuBd.ttf')
+      format('opentype'),
+    url('https://candyfonts.com/wp-data/2019/04/06/51581/FutuBd.ttf')
+      format('truetype'); */
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
-
+/* 
 @font-face {
   font-family: 'Futura Bk BT';
   src: url('FuturaBT-Book.eot');
   src: url('FuturaBT-Book.eot?#iefix') format('embedded-opentype'),
-    url('FuturaBT-Book.woff2') format('woff2'),
-    url('FuturaBT-Book.woff') format('woff'),
-    url('FuturaBT-Book.ttf') format('truetype');
+    url('./FuturaBT-Book.woff2') format('woff2'),
+    url('./FuturaBT-Book.woff') format('woff'),
+    url('./FuturaBT-Book.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -44,4 +49,4 @@
   font-weight: 500;
   font-style: normal;
   font-display: swap;
-}
+} */

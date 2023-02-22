@@ -54,8 +54,8 @@ export const Footer = () => {
                 </div>
               </div>
             </div>
-            <div style={{ width: '50%', margin: 'auto' }}>
-              <ul className="footer_links justify-content-end flex_start_xs">
+            <div className="footer_links justify-content-end flex_start_xs">
+              <ul className="" style={{ paddingLeft: '0px' }}>
                 <li style={{ fontSize: '8px' }}>
                   {t(translations.copyright, {
                     year: new Date().getFullYear(),

@@ -9,7 +9,7 @@ export const NotFoundComp = () => {
             <h4 className="text-uppercase banner_heading3">
               Coupon code is not valid
             </h4>
-            <a href="/welcome" className="btn_primary btn px-3 py-2 m-auto">
+            <a href="/jcb/welcome" className="btn_primary btn px-3 py-2 m-auto">
               Go back to scan coupon
             </a>
           </div>
