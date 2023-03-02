@@ -19,6 +19,7 @@ import { NotFoundPage } from './pages/NotFoundPage/Loadable';
 import { TermsAndConditions } from './pages/TNC';
 import { Login } from './pages/Admin/login';
 import { Generate } from './pages/Admin/generate';
+import { RedirectPage } from './pages/RedirectPage';
 
 export function App() {
   const { i18n } = useTranslation();
@@ -40,6 +41,7 @@ export function App() {
         <Route path="/jcb/tnc" element={<TermsAndConditions />} />
         <Route path="/jcb/admin/login" element={<Login />} />
         <Route path="/jcb/admin/generate" element={<Generate />} />
+        <Route path="*" element={<RedirectPage />} />
       </Routes>
       <GlobalStyle />
     </BrowserRouter>

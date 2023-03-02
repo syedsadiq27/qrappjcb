@@ -51,6 +51,7 @@ const NavBar = ({ isTranslateRequired = true }) => {
                 className="VIpgJd-ZVi9od-l4eHX-hSRGPd"
                 href="https://translate.google.com"
                 target="_blank"
+                rel="noreferrer"
               >
                 <img
                   src="https://www.gstatic.com/images/branding/googlelogo/1x/googlelogo_color_42x16dp.png"
