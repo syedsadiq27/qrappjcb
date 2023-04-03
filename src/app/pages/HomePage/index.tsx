@@ -12,12 +12,16 @@ import {
 import { db } from 'services/firebase';
 import MainComponent from 'app/components/MainComponent';
 import { useNavigate } from 'react-router-dom';
-
+import { Success } from 'app/components/MainComponent/succss';
+import { useStore } from '../../../zustandS';
+import { shallow } from 'zustand/shallow';
 const collectionRef = collection(db, 'qr_code');
 
 export function HomePage() {
   let navigate = useNavigate();
   const [res, setRes] = React.useState<any>();
+
+  const [isProcessed] = useStore(state => [state.isProcessed], shallow);
 
   const validateQRCode = async code => {
     const QRCode = code;
@@ -45,6 +49,7 @@ export function HomePage() {
       }
     });
   }, []);
+
   return (
     <>
       <Helmet>
@@ -52,7 +57,11 @@ export function HomePage() {
         <meta name="description" content="A Boilerplate application homepage" />
       </Helmet>
       <NavBar />
-      {res && <MainComponent res={res} />}
+      {res?.isActive && !(isProcessed || res?.isProcessed) ? (
+        <MainComponent res={res} />
+      ) : (
+        <Success message="This QR code is already scanned, Your cashback will be processed shortly. please contact us if you not recieved the cashback" />
+      )}
     </>
   );
 }

@@ -10,7 +10,7 @@ export const ScanQRCode = () => {
   const handleSubmit = e => {
     e.preventDefault();
     if (coupunCode == '') return;
-    navigate(`/?qc=${coupunCode}`);
+    navigate(`/jcb/?qc=${coupunCode}`);
   };
   return (
     <section className="upi_section pt-3 pt-md-5 px-2 px-md-4" id="upiSection">

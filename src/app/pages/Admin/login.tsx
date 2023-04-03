@@ -19,10 +19,11 @@ export const Login = () => {
         const user = userCredential.user;
         //@ts-ignore
         sessionStorage.setItem('accessToken', user?.accessToken);
-        navigate('/admin/generate');
+        navigate('/jcb/admin/generate');
       })
       .catch(error => {
         console.error(error);
+        alert(error);
         const errorCode = error.code;
         const errorMessage = error.message;
       });

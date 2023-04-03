@@ -13,6 +13,7 @@ import { db } from 'services/firebase';
 // import CsvDownloadButton from 'react-json-to-csv';
 import csvDownload from 'json-to-csv-export';
 import './overlay.css';
+import { useStore } from 'zustandS';
 
 interface IFormInput {
   codePrefix: string;
@@ -21,6 +22,123 @@ interface IFormInput {
 }
 
 const collectionRef = collection(db, 'qr_code');
+
+const addDocument = async ({ prefix, amount }) => {
+  try {
+    const create_UUID = () => {
+      var dt = new Date().getTime();
+      var uuid = `${prefix}xyxyxyxyxy`.replace(/[xy]/g, function (c) {
+        var r = (dt + Math.random() * 16) % 16 | 0;
+        dt = Math.floor(dt / 16);
+        return (c == 'x' ? r : (r & 0x3) | 0x8).toString(16);
+      });
+      return uuid.toUpperCase();
+    };
+
+    const documentId = create_UUID();
+    const data = await findDocument({ documentId });
+
+    if (data) return false;
+
+    const Doc = {
+      id: documentId,
+      cashbackAmount: parseInt(amount),
+      name: '',
+      walletNumber: '',
+      state: '',
+      city: '',
+      customerType: '',
+      isProcessed: false,
+      isActive: true,
+      // created: Timestamp,
+    };
+
+    await setDoc(doc(db, 'qr_code', documentId), Doc);
+
+    return documentId;
+  } catch (e) {
+    console.error('Error adding document: ', e);
+  }
+};
+
+const findDocument = async ({ documentId }) => {
+  const docRef = doc(db, 'qr_code', documentId);
+  const docSnap = await getDoc(docRef);
+  return docSnap.data();
+};
+
+const exportGenertedCodes = async e => {
+  console.log('startd...');
+  const array = await getAllCollections(e);
+
+  // const sortedarray = array.map(item =>
+  //   Object.keys(item)
+  //     .sort()
+  //     .reduce((obj, key) => {
+  //       obj[key] = item[key];
+  //       return obj;
+  //     }, {}),
+  // );
+  // console.log(sortedarray);
+  // setExportData(sortedarray);
+
+  downloadJSON(array);
+};
+
+const downloadJSON = exportData => {
+  const dataToConvert = {
+    data: exportData,
+    filename: 'csv_export',
+    delimiter: ',',
+    // headers: ['id', 'cashbackAmount', 'isActive'],
+  };
+  csvDownload(dataToConvert);
+};
+
+const getAllCollections = async e => {
+  e.preventDefault();
+  try {
+    const docsSnap = await getDocs(collectionRef);
+
+    const array: any = [];
+
+    docsSnap.forEach((doc: any) => {
+      // console.log(doc.data());
+      const data = doc.data();
+      // const created = doc._
+
+      data.createdDate = new Date(
+        doc._document.createTime.timestamp.seconds * 1000,
+      ).toLocaleDateString();
+
+      data.createdTime = new Date(
+        doc._document.createTime.timestamp.seconds * 1000,
+      ).toLocaleTimeString();
+
+      // console.log(data);
+      array.push(data);
+    });
+
+    return array;
+  } catch (e) {
+    console.error('Error adding document: ', e);
+  }
+};
+
+export const updateDocument = async ({ documentId, values }) => {
+  try {
+    const data = await findDocument({ documentId });
+    const Doc = {
+      ...data,
+      ...values,
+      isProcessed: true,
+    };
+    await setDoc(doc(db, 'qr_code', documentId), Doc);
+    useStore.setState({ isProcessed: true });
+  } catch (e) {
+    console.error('Error updating document: ', e);
+  }
+};
 
 export const GenerateForm = () => {
   const [loading, setLoading] = React.useState(false);
@@ -49,108 +167,6 @@ export const GenerateForm = () => {
     setLoading(false);
 
     alert('completed');
-  };
-
-  const addDocument = async ({ prefix, amount }) => {
-    try {
-      const create_UUID = () => {
-        var dt = new Date().getTime();
-        var uuid = `${prefix}xxxxyyxxxyy`.replace(/[xy]/g, function (c) {
-          var r = (dt + Math.random() * 16) % 16 | 0;
-          dt = Math.floor(dt / 16);
-          return (c == 'x' ? r : (r & 0x3) | 0x8).toString(16);
-        });
-        return uuid.toUpperCase();
-      };
-
-      const documentId = create_UUID();
-      const data = await findDocument({ documentId });
-
-      if (data) return false;
-
-      const Doc = {
-        id: documentId,
-        cashbackAmount: parseInt(amount),
-        name: '',
-        walletNumber: '',
-        state: '',
-        city: '',
-        customerType: '',
-        isProcessed: false,
-        isActive: true,
-        // created: Timestamp,
-      };
-
-      await setDoc(doc(db, 'qr_code', documentId), Doc);
-
-      return documentId;
-    } catch (e) {
-      console.error('Error adding document: ', e);
-    }
-  };
-
-  const findDocument = async ({ documentId }) => {
-    const docRef = doc(db, 'qr_code', documentId);
-    const docSnap = await getDoc(docRef);
-    return docSnap.data();
-  };
-
-  const exportGenertedCodes = async e => {
-    console.log('startd...');
-    const array = await getAllCollections(e);
-
-    // const sortedarray = array.map(item =>
-    //   Object.keys(item)
-    //     .sort()
-    //     .reduce((obj, key) => {
-    //       obj[key] = item[key];
-    //       return obj;
-    //     }, {}),
-    // );
-    // console.log(sortedarray);
-    // setExportData(sortedarray);
-
-    downloadJSON(array);
-  };
-
-  const downloadJSON = exportData => {
-    const dataToConvert = {
-      data: exportData,
-      filename: 'csv_export',
-      delimiter: ',',
-      // headers: ['id', 'cashbackAmount', 'isActive'],
-    };
-    csvDownload(dataToConvert);
-  };
-
-  const getAllCollections = async e => {
-    e.preventDefault();
-    try {
-      const docsSnap = await getDocs(collectionRef);
-
-      const array: any = [];
-
-      docsSnap.forEach((doc: any) => {
-        // console.log(doc.data());
-        const data = doc.data();
-        // const created = doc._
-
-        data.createdDate = new Date(
-          doc._document.createTime.timestamp.seconds * 1000,
-        ).toLocaleDateString();
-
-        data.createdTime = new Date(
-          doc._document.createTime.timestamp.seconds * 1000,
-        ).toLocaleTimeString();
-
-        // console.log(data);
-        array.push(data);
-      });
-
-      return array;
-    } catch (e) {
-      console.error('Error adding document: ', e);
-    }
   };
 
   return (

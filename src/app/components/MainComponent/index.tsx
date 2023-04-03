@@ -7,7 +7,6 @@ import { Form } from './form';
 import { ThankYou } from './thankyou';
 
 const MainComponent = props => {
-  // console.log(props);
   return (
     <main role="main">
       <Carousel />
@@ -22,7 +21,7 @@ const MainComponent = props => {
           <h1 className="upi_heading text-center mb-2 mb-md-5">
             <Trans i18nKey={'enterDetails'} />
           </h1>
-          <Form />
+          <Form res={props.res} />
         </div>
       </section>
       <Footer />

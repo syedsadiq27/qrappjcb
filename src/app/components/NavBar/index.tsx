@@ -6,7 +6,6 @@ import Logo from '../../../assets/images/logo.png';
 const NavBar = ({ isTranslateRequired = true }) => {
   const { t, i18n } = useTranslation();
   const handleLanguageChange = event => {
-    // console.log(event.target.value);
     const language = event.target.value;
     i18n.changeLanguage(language);
   };

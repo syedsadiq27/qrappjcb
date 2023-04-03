@@ -21,9 +21,12 @@ import { Login } from './pages/Admin/login';
 import { Generate } from './pages/Admin/generate';
 import { RedirectPage } from './pages/RedirectPage';
 
+// import GoogleSheetsProvider from 'react-db-google-sheets';
+
 export function App() {
   const { i18n } = useTranslation();
   return (
+    // <GoogleSheetsProvider>
     <BrowserRouter>
       <Helmet
         titleTemplate="JCB Cashback"
@@ -41,9 +44,10 @@ export function App() {
         <Route path="/jcb/tnc" element={<TermsAndConditions />} />
         <Route path="/jcb/admin/login" element={<Login />} />
         <Route path="/jcb/admin/generate" element={<Generate />} />
-        <Route path="*" element={<RedirectPage />} />
+        <Route path="/" element={<RedirectPage />} />
       </Routes>
       <GlobalStyle />
     </BrowserRouter>
+    // </GoogleSheetsProvider>
   );
 }

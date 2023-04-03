@@ -6,6 +6,7 @@ export const configureStore: StateCreator<RootState> = (set, get) => {
   return {
     value: null,
     funct: () => {},
+    isProcessed: false,
   };
 };
 

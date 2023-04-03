@@ -8,4 +8,5 @@ export interface RootState {
   // [INSERT NEW REDUCER KEY ABOVE] < Needed for generating containers seamlessly
   value: null;
   funct: () => void;
+  isProcessed: boolean;
 }

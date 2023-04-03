@@ -8,7 +8,7 @@ export const Generate = () => {
   const accessToken = sessionStorage.getItem('accessToken');
   let navigate = useNavigate();
 
-  if (!accessToken) navigate('/admin/login');
+  if (!accessToken) navigate('/jcb/admin/login');
   return (
     <>
       <NavBar isTranslateRequired={false} />

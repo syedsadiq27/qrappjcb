@@ -6,6 +6,8 @@ import { t } from 'i18next';
 import { translations } from 'locales/translations';
 // const translate = require('@iamtraction/google-translate');
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
+import axios from 'axios';
+import { updateDocument } from 'app/pages/Admin/generateForm';
 
 type OptionType = {
   value: string;
@@ -30,7 +32,11 @@ interface IFormInput {
   customerType: String;
 }
 
-export const Form = () => {
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const qcId = urlParams.get('qc');
+
+export const Form = ({ res }) => {
   const {
     register,
     handleSubmit,
@@ -38,11 +44,9 @@ export const Form = () => {
     watch,
     control,
   } = useForm<IFormInput>();
-
   const watchFields = watch(['state']);
   const onSubmit: SubmitHandler<IFormInput> = data => {
-    console.log(data);
-    handleSubmitButton();
+    handleSubmitButton(data);
   };
 
   const [walletNumber, setWalletNumber] = useState('');
@@ -85,7 +89,7 @@ export const Form = () => {
     if (selectedCity) setSelectedCity(city[0]);
   }, [selectedOption]);
 
-  const handleSubmitButton = () => {
+  const handleSubmitButton = data => {
     const create_UUID = () => {
       var dt = new Date().getTime();
       var uuid = `ORDERID_xxxxxyxxxyxx`.replace(/[xy]/g, function (c) {
@@ -99,34 +103,85 @@ export const Form = () => {
     const orderId = create_UUID();
     // e.preventDefault();
 
+    function getFormattedDate() {
+      var date = new Date();
+
+      var month: any = date.getMonth() + 1;
+      var day: any = date.getDate();
+      var hour: any = date.getHours();
+      var min: any = date.getMinutes();
+      var sec: any = date.getSeconds();
+
+      month = (month < 10 ? '0' : '') + month;
+      day = (day < 10 ? '0' : '') + day;
+      hour = (hour < 10 ? '0' : '') + hour;
+      min = (min < 10 ? '0' : '') + min;
+      sec = (sec < 10 ? '0' : '') + sec;
+
+      var str =
+        date.getFullYear() +
+        '-' +
+        month +
+        '-' +
+        day +
+        '_' +
+        hour +
+        ':' +
+        min +
+        ':' +
+        sec;
+
+      /*alert(str);*/
+
+      return str;
+    }
+
     const finalData = {
-      walletNumber,
-      address: {
-        city: selectedCity?.label,
-        state: selectedOption?.label,
-      },
-      customerType: selectedMerchantType?.value,
+      walletNumber: data.paytmWallet,
+      // address: {
+      city: data.city.label,
+      state: data.state.label,
+      // },
+      customerType: data.customerType.label,
     };
 
-    console.log(finalData);
+    const gooleSheetsData = {
+      Wallet: data.paytmWallet,
+      // city: data.city.label,
+      // state: data.state.label,
+      // customerType: data.customerType.label,
+      QRCode: qcId,
+      Amount: res.cashbackAmount,
+      Time: getFormattedDate(),
+      Status: 'Submitted',
+    };
 
-    fetch(
-      'https://staging-dashboard.paytm.com/bpay/api/v1/disburse/order/wallet/gratification',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-mid': '{mid}',
-          'x-checksum': '{checksum}',
-        },
-        body: JSON.stringify({
-          subwalletGuid: '28054249-XXXX-XXXX-af8f-fa163e429e83',
-          orderId: orderId,
-          beneficiaryPhoneNo: walletNumber,
-          amount: '1.00',
-        }),
-      },
-    );
+    axios
+      .post(
+        'https://sheet.best/api/sheets/dc3dc493-2213-4032-a11a-41b9386c46d3',
+        gooleSheetsData,
+      )
+      .then(response => {
+        updateDocument({ documentId: qcId, values: finalData });
+      });
+
+    // fetch(
+    //   'https://staging-dashboard.paytm.com/bpay/api/v1/disburse/order/wallet/gratification',
+    //   {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       'x-mid': '{mid}',
+    //       'x-checksum': '{checksum}',
+    //     },
+    //     body: JSON.stringify({
+    //       subwalletGuid: '28054249-XXXX-XXXX-af8f-fa163e429e83',
+    //       orderId: orderId,
+    //       beneficiaryPhoneNo: walletNumber,
+    //       amount: '1.00',
+    //     }),
+    //   },
+    // );
 
     // const cfSdk = require('cashfree-sdk');
 
