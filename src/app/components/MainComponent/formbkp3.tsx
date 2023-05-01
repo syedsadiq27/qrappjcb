@@ -6,8 +6,10 @@ import { t } from 'i18next';
 import { translations } from 'locales/translations';
 // const translate = require('@iamtraction/google-translate');
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
-import axios from 'axios';
-import { updateDocument } from 'app/pages/Admin/generateForm';
+import { config } from './config';
+import { load, update } from './spreadsheet';
+
+const { GoogleSpreadsheet } = require('../../../lib/index');
 
 type OptionType = {
   value: string;
@@ -26,24 +28,16 @@ const state: OptionType[] = State.getStatesOfCountry('IN').map(e => ({
 }));
 
 interface IFormInput {
-  paytmWallet?: number;
-  upiId?: any;
-  phoneNumber?: number;
+  paytmWallet: number;
   state: String;
   city: String;
   customerType: String;
-  name: String;
-  email: String;
-  address: String;
 }
 
-type PayMethods = 'paytm' | 'upi';
+export const Form = () => {
+  const doc = new GoogleSpreadsheet(config.spreadsheetId);
 
-const queryString = window.location.search;
-const urlParams = new URLSearchParams(queryString);
-const qcId = urlParams.get('qc');
-
-export const Form = ({ res }) => {
+  console.log(doc);
   const {
     register,
     handleSubmit,
@@ -51,10 +45,11 @@ export const Form = ({ res }) => {
     watch,
     control,
   } = useForm<IFormInput>();
+
   const watchFields = watch(['state']);
   const onSubmit: SubmitHandler<IFormInput> = data => {
-    setDisableSubmit(true);
-    handleSubmitButton(data);
+    console.log(data);
+    handleSubmitButton();
   };
 
   const [walletNumber, setWalletNumber] = useState('');
@@ -73,9 +68,6 @@ export const Form = ({ res }) => {
     city[0],
   );
 
-  const [disableSubmit, setDisableSubmit] = useState<boolean>(false);
-  const [payMethod, setPayMethod] = useState<PayMethods>('paytm');
-
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
       if (name == 'state') {
@@ -91,7 +83,11 @@ export const Form = ({ res }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  console.log(errors);
+  useEffect(() => {
+    // 1. Load the JavaScript client library.
+    (window as any).gapi.load('client:auth2', initClient);
+    gisLoaded();
+  }, []);
 
   useEffect(() => {
     const city = City.getCitiesOfState('IN', selectedOption?.value!).map(e => ({
@@ -102,7 +98,55 @@ export const Form = ({ res }) => {
     if (selectedCity) setSelectedCity(city[0]);
   }, [selectedOption]);
 
-  const handleSubmitButton = data => {
+  const initClient = () => {
+    console.log('loading....');
+    // 2. Initialize the JavaScript client library.
+    (window as any).gapi.client
+      .init({
+        apiKey: config.apiKey,
+        clientId: config.clientId,
+        scope: config.scopes,
+        // Your API key will be automatically added to the Discovery Document URLs.
+        discoveryDocs: config.discoveryDocs,
+      })
+      .then(() => {
+        // 3. Initialize and make the API request.
+        // load(this.onLoad);
+        // load(onLoad);
+        (window as any).gapi.auth2
+          .getAuthInstance()
+          ?.signIn()
+          .then(() => {
+            update();
+          });
+      });
+  };
+
+  function gisLoaded() {
+    // const tokenClient = (window as any).google.accounts.oauth2.initTokenClient({
+    //   client_id:
+    //     '502942834359-4hbhtddvif1snpsmdckp9q7vpqa9pn73.apps.googleusercontent.com',
+    //   scope: config.scopes,
+    //   callback: () => {
+    //     console.log('done');
+    //   },
+    // });
+
+    update();
+    // tokenClient.requestAccessToken({ prompt: 'consent' });
+  }
+
+  const onLoad = (data, error) => {
+    if (data) {
+      const cars = data.cars;
+      console.log(cars);
+      // this.setState({ cars });
+    } else {
+      // this.setState({ error });
+    }
+  };
+
+  const handleSubmitButton = () => {
     const create_UUID = () => {
       var dt = new Date().getTime();
       var uuid = `ORDERID_xxxxxyxxxyxx`.replace(/[xy]/g, function (c) {
@@ -116,68 +160,90 @@ export const Form = ({ res }) => {
     const orderId = create_UUID();
     // e.preventDefault();
 
-    function getFormattedDate() {
-      var date = new Date();
-
-      var month: any = date.getMonth() + 1;
-      var day: any = date.getDate();
-      var hour: any = date.getHours();
-      var min: any = date.getMinutes();
-      var sec: any = date.getSeconds();
-
-      month = (month < 10 ? '0' : '') + month;
-      day = (day < 10 ? '0' : '') + day;
-      hour = (hour < 10 ? '0' : '') + hour;
-      min = (min < 10 ? '0' : '') + min;
-      sec = (sec < 10 ? '0' : '') + sec;
-
-      var str =
-        date.getFullYear() +
-        '-' +
-        month +
-        '-' +
-        day +
-        '_' +
-        hour +
-        ':' +
-        min +
-        ':' +
-        sec;
-
-      /*alert(str);*/
-
-      return str;
-    }
-
     const finalData = {
-      walletNumber: data.paytmWallet,
-      city: data.city.label,
-      state: data.state.label,
-      customerType: data.customerType.label,
-      name: data.name,
-      email: data.email,
-      phoneNumber: data.phoneNumber,
-      upiId: data.upiId,
+      walletNumber,
+      address: {
+        city: selectedCity?.label,
+        state: selectedOption?.label,
+      },
+      customerType: selectedMerchantType?.value,
     };
 
-    const gooleSheetsData = {
-      Wallet: data.paytmWallet,
-      UPI: data.upiId,
-      PhoneNumber: data.phoneNumber,
-      QRCode: qcId,
-      Amount: res.cashbackAmount,
-      Time: getFormattedDate(),
-      Status: 'Submitted',
-    };
+    console.log(finalData);
 
-    axios
-      .post(
-        'https://sheet.best/api/sheets/b058722e-cf4c-46d4-a9a4-99953ead6334',
-        gooleSheetsData,
-      )
-      .then(response => {
-        updateDocument({ documentId: qcId, values: finalData });
-      });
+    fetch(
+      'https://staging-dashboard.paytm.com/bpay/api/v1/disburse/order/wallet/gratification',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-mid': '{mid}',
+          'x-checksum': '{checksum}',
+        },
+        body: JSON.stringify({
+          subwalletGuid: '28054249-XXXX-XXXX-af8f-fa163e429e83',
+          orderId: orderId,
+          beneficiaryPhoneNo: walletNumber,
+          amount: '1.00',
+        }),
+      },
+    );
+
+    // const cfSdk = require('cashfree-sdk');
+
+    // //access the PayoutsSdk from CashfreeSDK
+    // const { Payouts } = cfSdk;
+
+    // // Instantiate Cashfree Payouts
+    // const payoutsInstance = new Payouts({
+    //   env: 'TEST',
+    //   clientId: 'CF295059CF724H5ROKEU1D902S5G ',
+    //   clientSecret: 'a061409e11a08146e16527c1080d4c84cb2c951e',
+    // });
+
+    // fetch('http://payout-gamma.cashfree.com/payout/v1/authorize', {
+    //   method: 'POST',
+    //   headers: {
+    //     'X-Client-Id': 'CF295059CF724H5ROKEU1D902S5G',
+    //     'X-Client-Secret': 'a061409e11a08146e16527c1080d4c84cb2c951e',
+    //     // 'cache-control': 'no-cache',
+    //   },
+    // });
+
+    // fetch('https://sandbox.cashfree.com/pg/orders', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'x-api-version': '2022-09-01',
+    //     'x-client-id': '<App ID>',
+    //     'x-client-secret': '<Secret Key>',
+    //   },
+    //   body: '{\n  "order_id": "order_1626945143520",\n  "order_amount": 10.12,\n  "order_currency": "INR",\n  "order_note": "Additional order info"\n  "customer_details": {\n   "customer_id": "12345",\n    "customer_name": "name",\n    "customer_email": "care@cashfree.com",\n    "customer_phone": "9816512345"\n  }\n}',
+    // });
+
+    // fetch('http://{{Host%20Url}}/payout/v1.2/directTransfer', {
+    //   method: 'POST',
+    //   headers: {
+    //     Authorization: 'Bearer {{Token}}',
+    //     'Content-Type': 'application/json',
+    //   },
+    //   // body: '{\n "amount": "20.00",\n "transferId": "JUNOB201814n009",\n "transferMode": "neft",\n "remarks": "test",\n "beneDetails" : {\n     "bankAccount": "026291800001191",\n     "ifsc": "YESB0000262",\n     "name": "Ranjiths",\n     "email": "ranjiths@cashfree.com",\n     "phone": "9999999999",\n     "address1": "any_dummy_value"\n },\n "paymentInstrumentId": "YESB_CONNECTED"\n }',
+    //   body: JSON.stringify({
+    //     amount: '20.00',
+    //     transferId: 'JUNOB201814n009',
+    //     transferMode: 'neft',
+    //     remarks: 'test',
+    //     beneDetails: {
+    //       bankAccount: '026291800001191',
+    //       ifsc: 'YESB0000262',
+    //       name: 'Ranjiths',
+    //       email: 'ranjiths@cashfree.com',
+    //       phone: '9999999999',
+    //       address1: 'any_dummy_value',
+    //     },
+    //     paymentInstrumentId: 'YESB_CONNECTED',
+    //   }),
+    // });
   };
 
   return (
@@ -189,65 +255,33 @@ export const Form = ({ res }) => {
               <Trans i18nKey={'upiGuidelines'} />
             </span>
             <div className="d-flex align-items-center justify-content-start mt-3">
-              <label
-                className="d-flex align-items-center justify-content-start mr-3"
-                style={{ fontFamily: 'Futura Md BT' }}
-              >
-                <input
-                  type="radio"
-                  name="pay_method"
-                  value={'upi'}
-                  onClick={() => setPayMethod('upi')}
-                />
-                <span className="ml-2">UPI ID</span>
-              </label>
-              <label
-                className="d-flex align-items-center justify-content-start mr-3"
-                style={{ fontFamily: 'Futura Md BT' }}
-              >
+              <label className="d-flex align-items-center justify-content-start mr-3">
                 <input
                   type="radio"
                   name="pay_method"
                   defaultValue="wallet"
                   defaultChecked
-                  onClick={() => setPayMethod('paytm')}
                 />
                 <span className="ml-2">Paytm Wallet</span>
               </label>
             </div>
             <div className="upi_block mb-4">
-              <div
-                id="upi_block"
-                className="upi_form"
-                style={payMethod === 'upi' ? { display: 'block' } : {}}
-              >
+              <div id="upi_block" className="upi_form">
                 <div className="upi_input">
                   <input
                     type="text"
                     className="upi_control"
-                    id="upiId"
+                    id="upiid"
+                    name="upiid"
                     placeholder="Enter Your UPI Id"
-                    {...register('upiId', {
-                      required: payMethod === 'upi',
-                    })}
                   />
                 </div>
-                <div className="upi_input">
-                  <input
-                    type="text"
-                    className="upi_control"
-                    id="phoneNumber"
-                    placeholder="Phone Number"
-                    {...register('phoneNumber', {
-                      required: payMethod === 'upi',
-                    })}
-                  />
-                </div>
+                <div className="upiphinput" />
               </div>
               <div
                 id="wallet_block"
                 className="upi_form"
-                style={payMethod === 'paytm' ? { display: 'block' } : {}}
+                style={{ display: 'block' }}
               >
                 <div className="upi_input">
                   <input
@@ -256,7 +290,7 @@ export const Form = ({ res }) => {
                     id="walletno"
                     placeholder={t(translations.paytmWalletLabel)!}
                     {...register('paytmWallet', {
-                      required: payMethod === 'paytm',
+                      required: true,
                       maxLength: 10,
                       minLength: 10,
                     })}
@@ -274,58 +308,6 @@ export const Form = ({ res }) => {
                   )}
                 </div>
               </div>
-
-              {/* Other */}
-
-              <div
-                id="other_block"
-                className="upi_form"
-                style={{ display: 'block' }}
-              >
-                <div className="upi_input">
-                  <input
-                    className="upi_control"
-                    id="name"
-                    placeholder={t(translations.nameLabel)!}
-                    {...register('name', {
-                      required: true,
-                    })}
-                  />
-                  {errors.name?.type === 'required' && (
-                    <p role="alert">Name is required</p>
-                  )}
-                </div>
-                <div className="upi_input">
-                  <input
-                    type="email"
-                    className="upi_control"
-                    id="email"
-                    placeholder={t(translations.emailLabel)!}
-                    {...register('email', {
-                      required: true,
-                    })}
-                  />
-                  {errors.name?.type === 'required' && (
-                    <p role="alert">Email is required</p>
-                  )}
-                </div>
-                <div className="upi_input">
-                  <input
-                    type="text"
-                    className="upi_control"
-                    id="address"
-                    placeholder={t(translations.addressLabel)!}
-                    {...register('address', {
-                      required: true,
-                    })}
-                  />
-                  {errors.name?.type === 'required' && (
-                    <p role="alert">Address is required</p>
-                  )}
-                </div>
-              </div>
-
-              {/* End other */}
               <div id="online_block" className="upi_form">
                 <p className="font-weight-bold">Please Fill Below Fileds</p>
                 <div className="upi_input">
@@ -485,7 +467,6 @@ export const Form = ({ res }) => {
                 className="upi_control gen_btn w-100 py-3 mt-4"
                 id="submitbtn"
                 type="submit"
-                disabled={disableSubmit}
               >
                 Submit
               </button>

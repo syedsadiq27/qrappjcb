@@ -3,7 +3,7 @@
 body {
   margin: 0;
   font-family: 'Futura Md BT' !important;
-  font-size: 14px;
+  font-size: 14px !important;
 }
 #home {
   position: relative;
@@ -1415,8 +1415,9 @@ nav {
 .upi_input {
   position: relative;
   width: 100%;
-  font-style: italic;
+  /* font-style: italic; */
   margin-bottom: 15px;
+  color: #212529;
 }
 .upi_input .upi_control {
   padding: 10px 25px;

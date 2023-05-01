@@ -18,17 +18,7 @@
     "template",
     "template.json"
   ],
-  "keywords": [
-    "react",
-    "create-react-app",
-    "template",
-    "typescript",
-    "redux",
-    "reduxjs",
-    "react-redux",
-    "react-boilerplate",
-    "styled-components"
-  ],
+  "keywords": [],
   "scripts": {
     "// ---DEFAULT CRA---": "",
     "start": "react-scripts start",
@@ -59,7 +49,8 @@
     "changelog": "ts-node ./internals/scripts/create-changelog.script.ts",
     "release": "standard-version",
     "publish:npm": "yarn run create:npm-package && yarn publish .cra-template-rb --non-interactive",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "deploy": "yarn build && firebase deploy"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [

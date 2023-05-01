@@ -7,8 +7,24 @@ const NavBar = ({ isTranslateRequired = true }) => {
   const { t, i18n } = useTranslation();
   const handleLanguageChange = event => {
     const language = event.target.value;
+    sessionStorage.setItem('language', language);
     i18n.changeLanguage(language);
   };
+
+  const languages = [
+    { code: 'en', label: t(translations.english) },
+    { code: 'bn', label: t(translations.bengali) },
+    { code: 'gu', label: t(translations.gujarati) },
+    { code: 'hi', label: t(translations.hindi) },
+    { code: 'kn', label: t(translations.kannada) },
+    { code: 'ml', label: t(translations.malayalam) },
+    { code: 'mr', label: t(translations.marathi) },
+    { code: 'or', label: t(translations.odia) },
+    { code: 'pa', label: t(translations.punjabi) },
+    { code: 'ta', label: t(translations.tamil) },
+    { code: 'te', label: t(translations.telugu) },
+    { code: 'ur', label: t(translations.urdu) },
+  ];
 
   return (
     <nav className="navbar main_nav navbar-expand-lg navbar-dark">
@@ -30,7 +46,17 @@ const NavBar = ({ isTranslateRequired = true }) => {
                 onChange={handleLanguageChange}
               >
                 <option value="">Select Language</option>
-                <option value="en">{t(translations.english)}</option>
+                {languages.map(item => (
+                  <option
+                    value={item.code}
+                    selected={
+                      item.code === (sessionStorage.getItem('language') || 'en')
+                    }
+                  >
+                    {item.label}
+                  </option>
+                ))}
+                {/* <option value="en">{t(translations.english)}</option>
                 <option value="bn">{t(translations.bengali)}</option>
                 <option value="gu">{t(translations.gujarati)}</option>
                 <option value="hi">{t(translations.hindi)}</option>
@@ -41,7 +67,7 @@ const NavBar = ({ isTranslateRequired = true }) => {
                 <option value="pa">{t(translations.punjabi)}</option>
                 <option value="ta">{t(translations.tamil)}</option>
                 <option value="te">{t(translations.telugu)}</option>
-                <option value="ur">{t(translations.urdu)}</option>
+                <option value="ur">{t(translations.urdu)}</option> */}
               </select>
             </div>
             Powered by &nbsp;

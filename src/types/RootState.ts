@@ -9,4 +9,5 @@ export interface RootState {
   value: null;
   funct: () => void;
   isProcessed: boolean;
+  success: boolean;
 }

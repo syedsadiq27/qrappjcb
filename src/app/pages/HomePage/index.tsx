@@ -57,10 +57,17 @@ export function HomePage() {
         <meta name="description" content="A Boilerplate application homepage" />
       </Helmet>
       <NavBar />
-      {res?.isActive && !(isProcessed || res?.isProcessed) ? (
-        <MainComponent res={res} />
-      ) : (
-        <Success message="This QR code is already scanned, Your cashback will be processed shortly. please contact us if you not recieved the cashback" />
+
+      {res && (
+        <>
+          {res?.isActive && !(isProcessed || res?.isProcessed) ? (
+            <MainComponent res={res} />
+          ) : isProcessed ? (
+            <Success message="Thank You for scanning the QR code. Your cashback will be processed shortly." />
+          ) : (
+            <Success message="This QR code is already scanned, Your cashback will be processed shortly. please contact us if you not recieved the cashback" />
+          )}
+        </>
       )}
     </>
   );

@@ -20,17 +20,25 @@ import { TermsAndConditions } from './pages/TNC';
 import { Login } from './pages/Admin/login';
 import { Generate } from './pages/Admin/generate';
 import { RedirectPage } from './pages/RedirectPage';
+import { t } from 'i18next';
+import { translations } from 'locales/translations';
 
 // import GoogleSheetsProvider from 'react-db-google-sheets';
 
 export function App() {
   const { i18n } = useTranslation();
+
+  React.useEffect(() => {
+    console.log('executing.....');
+    const language = sessionStorage.getItem('language');
+    if (!language) sessionStorage.setItem('language', 'en');
+  }, []);
   return (
     // <GoogleSheetsProvider>
     <BrowserRouter>
       <Helmet
-        titleTemplate="JCB Cashback"
-        defaultTitle="JCB Cashback"
+        titleTemplate={t(translations.title)!}
+        defaultTitle={t(translations.title)!}
         htmlAttributes={{ lang: i18n.language }}
       >
         <meta name="description" content="A React Boilerplate application" />
